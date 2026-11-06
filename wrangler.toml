@@ -1,0 +1,24 @@
+# Cloudflare Workers, piano gratuito. Istruzioni nel README.
+name = "offerte-giochi"
+main = "worker.js"
+compatibility_date = "2025-09-01"
+
+[assets]
+directory = "./public"
+binding = "ASSETS"
+run_worker_first = true
+
+# Ricerca automatica ogni ora (orario UTC)
+[triggers]
+crons = ["0 * * * *"]
+
+[vars]
+ZIP = "20100"
+SCAN_MINUTES = "60"
+
+# Archivio per wishlist e risultati. Crea il namespace con:
+#   npx wrangler kv namespace create DB
+# e incolla qui l'id che ti restituisce.
+[[kv_namespaces]]
+binding = "DB"
+id = "INCOLLA_QUI_ID_KV"

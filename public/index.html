@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#16181d">
+  <title>Offerte Giochi</title>
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/icon.svg">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header class="top">
+    <h1>Offerte Giochi</h1>
+    <button id="scanBtn" class="ghost" title="Cerca adesso">↻ Cerca</button>
+  </header>
+  <div id="banner" class="banner" hidden></div>
+
+  <main>
+    <section id="tab-offers" class="tab">
+      <div class="filters">
+        <select id="fPlatform"><option value="">Tutte le piattaforme</option><option value="PS4">PS4</option><option value="PS5">PS5</option><option value="SWITCH">Switch</option></select>
+        <select id="fCond"><option value="">Nuovo e usato</option><option value="NEW">Solo nuovo</option><option value="USED">Solo usato</option></select>
+        <label class="check"><input type="checkbox" id="fUnder"> Sotto soglia</label>
+      </div>
+      <div id="offers"></div>
+    </section>
+
+    <section id="tab-wishlist" class="tab" hidden>
+      <form id="addForm" class="card form">
+        <input name="name" placeholder="Nome del gioco (es. Elden Ring)" required>
+        <div class="row">
+          <select name="platform" required><option value="PS5">PS5</option><option value="PS4">PS4</option><option value="SWITCH">Switch</option></select>
+          <select name="condition"><option value="ANY">Nuovo o usato</option><option value="USED">Solo usato</option><option value="NEW">Solo nuovo</option></select>
+        </div>
+        <div class="row">
+          <input name="maxPrice" type="number" inputmode="decimal" step="0.5" min="0" placeholder="Prezzo max €">
+          <button type="submit">Aggiungi</button>
+        </div>
+      </form>
+      <div id="wishlist"></div>
+    </section>
+
+    <section id="tab-alerts" class="tab" hidden>
+      <div id="alerts"></div>
+    </section>
+  </main>
+
+  <nav class="tabs">
+    <button data-tab="offers" class="active">Offerte</button>
+    <button data-tab="wishlist">Wishlist</button>
+    <button data-tab="alerts">Avvisi <span id="alertCount" class="badge" hidden></span></button>
+  </nav>
+  <script src="/app.js" type="module"></script>
+</body>
+</html>

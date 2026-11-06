@@ -1,0 +1,9 @@
+{
+  "name": "offerte-videogames",
+  "version": "0.1.0",
+  "description": "PWA personale che cerca offerte su giochi fisici PS4, PS5 e Switch (nuovi e usati) in Italia",
+  "type": "module",
+  "main": "server.js",
+  "scripts": { "start": "node server.js" },
+  "engines": { "node": ">=20" }
+}

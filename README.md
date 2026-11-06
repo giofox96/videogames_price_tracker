@@ -12,23 +12,38 @@ App personale (PWA, installabile sul telefono) che cerca le offerte migliori su 
 
 Senza chiave eBay parte in **modalità demo** con prezzi finti, così puoi provare l'interfaccia.
 
-## Avvio
-Serve Node.js 20 o più recente, nessuna dipendenza da installare.
+## Metterla online gratis (Cloudflare Workers)
+Il piano gratuito di Cloudflare basta per uso personale: sempre acceso, ricerca automatica ogni ora, nessuna carta di credito.
 
+1. Crea un account gratuito su https://dash.cloudflare.com/sign-up
+2. Sul computer, con Node.js 20 o più recente, nella cartella del progetto:
+   ```bash
+   npm install
+   npx wrangler login                 # apre il browser per collegare l'account
+   npx wrangler kv namespace create DB
+   ```
+   Copia l'`id` che ti restituisce al posto di `INCOLLA_QUI_ID_KV` in `wrangler.toml`.
+3. Imposta password e chiavi (ognuno ti chiede il valore):
+   ```bash
+   npx wrangler secret put APP_PASSWORD
+   npx wrangler secret put EBAY_CLIENT_ID
+   npx wrangler secret put EBAY_CLIENT_SECRET
+   npx wrangler secret put TELEGRAM_BOT_TOKEN   # facoltativo
+   npx wrangler secret put TELEGRAM_CHAT_ID     # facoltativo
+   ```
+4. Pubblica: `npm run deploy`. Ti dà un indirizzo tipo `https://offerte-giochi.<tuonome>.workers.dev`.
+5. Aprilo dal telefono, inserisci la password (nome utente qualsiasi) e scegli "Aggiungi a schermata Home".
+
+Con il piano gratuito ogni ricerca può fare al massimo 50 chiamate esterne: la wishlist regge bene fino a circa 20 giochi.
+
+Per cambiare il CAP usato per stimare la spedizione modifica `ZIP` in `wrangler.toml`.
+
+## Provarla sul computer
+Nessuna dipendenza da installare per la versione locale:
 ```bash
 cp .env.example .env    # poi compila le chiavi
 npm start               # apri http://localhost:8080
 ```
-
-Dal telefono: apri l'indirizzo del server e scegli "Aggiungi a schermata Home".
-
-## Metterla online (Render)
-1. Crea un account su https://render.com e collega GitHub.
-2. *New > Blueprint*, scegli questo repository: Render legge `render.yaml`.
-3. Compila le variabili richieste (`APP_PASSWORD`, chiavi eBay, Telegram) e conferma.
-4. Apri l'indirizzo `https://offerte-giochi-xxxx.onrender.com` dal telefono e aggiungilo alla schermata Home.
-
-Il piano `starter` (circa 7 $/mese) resta sempre acceso e ha un disco per la wishlist. Il piano gratuito si spegne dopo 15 minuti senza visite, quindi non cerca in background e perde la wishlist a ogni riavvio.
 
 ## Chiave eBay (gratuita)
 1. Registrati su https://developer.ebay.com
@@ -40,7 +55,9 @@ Il piano `starter` (circa 7 $/mese) resta sempre acceso e ha un disco per la wis
 2. Scrivi un messaggio al tuo bot, poi apri `https://api.telegram.org/bot<TOKEN>/getUpdates` e copia il `chat.id` in `TELEGRAM_CHAT_ID`.
 
 ## Struttura
-- `server.js`: server HTTP, API, ricerca periodica, avvisi. Dati salvati in `data/db.json`.
+- `core.js`: logica dell'app (wishlist, ricerca, avvisi, API), condivisa tra le due versioni.
+- `worker.js` e `wrangler.toml`: versione Cloudflare, dati nell'archivio KV.
+- `server.js`: versione locale, dati in `data/db.json`.
 - `sources/`: un file per fonte (`ebay.js`, `pricecharting.js`, `demo.js`) e i filtri piattaforma (`platforms.js`).
 - `public/`: l'app (HTML, CSS, JS, manifest, service worker).
 

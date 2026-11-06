@@ -4,11 +4,11 @@ const CATEGORY_VIDEOGAMES = '139973'; // Videogiochi > Giochi
 let token = null;
 let tokenExpires = 0;
 
-export const ebayConfigured = () => Boolean(process.env.EBAY_CLIENT_ID && process.env.EBAY_CLIENT_SECRET);
+export const ebayConfigured = (env) => Boolean(env.EBAY_CLIENT_ID && env.EBAY_CLIENT_SECRET);
 
-async function getToken() {
+async function getToken(env) {
   if (token && Date.now() < tokenExpires - 60_000) return token;
-  const auth = Buffer.from(`${process.env.EBAY_CLIENT_ID}:${process.env.EBAY_CLIENT_SECRET}`).toString('base64');
+  const auth = btoa(`${env.EBAY_CLIENT_ID}:${env.EBAY_CLIENT_SECRET}`);
   const res = await fetch('https://api.ebay.com/identity/v1/oauth2/token', {
     method: 'POST',
     headers: { Authorization: `Basic ${auth}`, 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -22,7 +22,7 @@ async function getToken() {
 }
 
 // condition: 'NEW' | 'USED' | 'ANY'
-export async function searchEbay(item) {
+export async function searchEbay(item, env) {
   const p = PLATFORMS[item.platform];
   const filters = ['deliveryCountry:IT', 'priceCurrency:EUR', 'buyingOptions:{FIXED_PRICE|AUCTION}'];
   if (item.condition === 'NEW') filters.push('conditions:{NEW}');
@@ -36,10 +36,10 @@ export async function searchEbay(item) {
   });
   const res = await fetch(`https://api.ebay.com/buy/browse/v1/item_summary/search?${params}`, {
     headers: {
-      Authorization: `Bearer ${await getToken()}`,
+      Authorization: `Bearer ${await getToken(env)}`,
       'X-EBAY-C-MARKETPLACE-ID': 'EBAY_IT',
       'Accept-Language': 'it-IT',
-      'X-EBAY-C-ENDUSERCTX': `contextualLocation=country%3DIT%2Czip%3D${process.env.ZIP || '20100'}`,
+      'X-EBAY-C-ENDUSERCTX': `contextualLocation=country%3DIT%2Czip%3D${env.ZIP || '20100'}`,
     },
   });
   if (!res.ok) throw new Error(`eBay search ${res.status}: ${await res.text()}`);
